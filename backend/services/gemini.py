@@ -24,9 +24,9 @@ if not HF_TOKEN:
     raise RuntimeError("HF_TOKEN environment variable is not set")
 
 # ---------------------------------------------------------------------------
-# Model — free to use on HuggingFace Inference API
+# Model — confirmed chat model on HF serverless inference router
 # ---------------------------------------------------------------------------
-MODEL_ID = "mistralai/Mistral-7B-Instruct-v0.3"
+MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"
 
 SYSTEM_PROMPT = (
     "You are a helpful, knowledgeable, and friendly AI assistant named Nova. "
@@ -34,7 +34,11 @@ SYSTEM_PROMPT = (
     "identifiers when providing code. Be concise yet thorough."
 )
 
-client = InferenceClient(model=MODEL_ID, token=HF_TOKEN)
+# Use provider="hf-inference" for the new router.huggingface.co endpoint
+client = InferenceClient(
+    provider="hf-inference",
+    api_key=HF_TOKEN,
+)
 
 
 def generate_response(history: List[Dict[str, str]], user_message: str) -> str:
@@ -62,6 +66,7 @@ def generate_response(history: List[Dict[str, str]], user_message: str) -> str:
         messages.append({"role": "user", "content": user_message})
 
         response = client.chat_completion(
+            model=MODEL_ID,
             messages=messages,
             max_tokens=2048,
             temperature=0.7,
