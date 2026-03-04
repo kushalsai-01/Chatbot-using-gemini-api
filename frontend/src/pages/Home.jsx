@@ -1,17 +1,28 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { HiBars3 } from "react-icons/hi2";
 import { BsStars } from "react-icons/bs";
 import Sidebar from "../components/Sidebar.jsx";
 import ChatWindow from "../components/ChatWindow.jsx";
 import InputBar from "../components/InputBar.jsx";
 import { getSessionId, newSession } from "../utils/session.js";
-import { sendMessage } from "../api/chat.js";
+import { sendMessage, getSessions, getSessionMessages } from "../api/chat.js";
 
 export default function Home({ darkMode, setDarkMode }) {
   const [sessionId, setSessionId] = useState(getSessionId);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sessions, setSessions] = useState([]);
+
+  const fetchSessions = useCallback(async () => {
+    const data = await getSessions();
+    setSessions(data);
+  }, []);
+
+  // Load session list on mount
+  useEffect(() => {
+    fetchSessions();
+  }, [fetchSessions]);
 
   const handleSend = useCallback(
     async (text) => {
@@ -22,6 +33,8 @@ export default function Home({ darkMode, setDarkMode }) {
       try {
         const reply = await sendMessage(sessionId, text);
         setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+        // Refresh sidebar history after each exchange
+        fetchSessions();
       } catch (err) {
         setMessages((prev) => [
           ...prev,
@@ -31,7 +44,7 @@ export default function Home({ darkMode, setDarkMode }) {
         setIsLoading(false);
       }
     },
-    [sessionId],
+    [sessionId, fetchSessions],
   );
 
   const handleNewChat = useCallback(() => {
@@ -39,6 +52,14 @@ export default function Home({ darkMode, setDarkMode }) {
     setSessionId(id);
     setMessages([]);
   }, []);
+
+  const handleSessionSelect = useCallback(async (id) => {
+    if (id === sessionId) { setSidebarOpen(false); return; }
+    const msgs = await getSessionMessages(id);
+    setSessionId(id);
+    setMessages(msgs);
+    setSidebarOpen(false);
+  }, [sessionId]);
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
@@ -50,6 +71,9 @@ export default function Home({ darkMode, setDarkMode }) {
         onNewChat={handleNewChat}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        sessions={sessions}
+        currentSessionId={sessionId}
+        onSessionSelect={handleSessionSelect}
       />
 
       <div className="relative z-10 flex flex-col flex-1 min-w-0">

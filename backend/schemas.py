@@ -23,3 +23,18 @@ class HealthResponse(BaseModel):
     """Health-check response."""
 
     status: str = "ok"
+
+
+class SessionInfo(BaseModel):
+    """Summary of a chat session shown in the sidebar."""
+
+    session_id: str
+    title: str
+    created_at: str
+
+
+class MessageOut(BaseModel):
+    """A single message returned when loading a session."""
+
+    role: str
+    content: str

@@ -38,10 +38,33 @@ export async function sendMessage(sessionId, message) {
 }
 
 /**
- * Hit the /health endpoint.
+ * Fetch all recent sessions from the backend.
  *
- * @returns {Promise<{status: string}>}
+ * @returns {Promise<Array<{session_id: string, title: string, created_at: string}>>}
  */
+export async function getSessions() {
+  try {
+    const { data } = await client.get("/sessions");
+    return data;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Load all messages for an existing session.
+ *
+ * @param {string} sessionId
+ * @returns {Promise<Array<{role: string, content: string}>>}
+ */
+export async function getSessionMessages(sessionId) {
+  try {
+    const { data } = await client.get(`/sessions/${sessionId}/messages`);
+    return data;
+  } catch {
+    return [];
+  }
+}
 export async function healthCheck() {
   const { data } = await client.get("/health");
   return data;

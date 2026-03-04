@@ -1,7 +1,16 @@
-import { HiPlus, HiXMark, HiTrash, HiSun, HiMoon } from "react-icons/hi2";
+import { HiPlus, HiXMark, HiTrash, HiSun, HiMoon, HiChatBubbleLeftRight } from "react-icons/hi2";
 import { BsStars } from "react-icons/bs";
 
-export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClose }) {
+function formatDate(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 86_400_000) return "Today";
+  if (diff < 172_800_000) return "Yesterday";
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClose, sessions = [], currentSessionId, onSessionSelect }) {
   return (
     <>
       {/* Mobile overlay */}
@@ -47,8 +56,36 @@ export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClos
           </button>
         </div>
 
-        {/* Spacer */}
-        <div className="flex-1" />
+        {/* Session history */}
+        <div className="flex-1 overflow-y-auto px-2 pb-2">
+          {sessions.length === 0 ? (
+            <p className="text-[11px] text-[var(--text-muted)] text-center mt-6 px-3 opacity-60">
+              No conversations yet
+            </p>
+          ) : (
+            <div className="space-y-0.5">
+              {sessions.map((s) => (
+                <button
+                  key={s.session_id}
+                  onClick={() => onSessionSelect(s.session_id)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-150 group ${
+                    s.session_id === currentSessionId
+                      ? "bg-[var(--accent-dim)] text-[var(--text-primary)]"
+                      : "text-[var(--text-secondary)] hover:bg-[var(--accent-dim)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <HiChatBubbleLeftRight className="w-3 h-3 mt-0.5 shrink-0 opacity-50" />
+                    <div className="min-w-0">
+                      <p className="text-[12px] truncate leading-snug">{s.title}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{formatDate(s.created_at)}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Footer */}
         <div className="p-3 space-y-0.5 border-t border-[var(--border)]">
@@ -75,7 +112,7 @@ export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClos
 
           <div className="mt-3 px-3 pb-1">
             <p className="text-[10px] text-[var(--text-muted)] opacity-60 tracking-[0.15em] uppercase">
-              Powered by Gemini
+              Powered by Groq
             </p>
           </div>
         </div>
