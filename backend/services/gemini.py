@@ -1,8 +1,8 @@
 """
-services/gemini.py — Hugging Face Inference API integration.
+services/gemini.py — Groq Inference API integration.
 
-Uses the HuggingFace InferenceClient (chat completions) with a free
-pretrained model. Set HF_TOKEN env var to your HuggingFace access token.
+Uses the Groq client (OpenAI-compatible) with a free fast model.
+Set GROQ_API_KEY env var to your Groq API key (console.groq.com).
 """
 
 from __future__ import annotations
@@ -11,22 +11,22 @@ import os
 import logging
 from typing import List, Dict
 
-from huggingface_hub import InferenceClient
+from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-HF_TOKEN: str = os.getenv("HF_TOKEN", "")
+GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 
-if not HF_TOKEN:
-    raise RuntimeError("HF_TOKEN environment variable is not set")
+if not GROQ_API_KEY:
+    raise RuntimeError("GROQ_API_KEY environment variable is not set")
 
 # ---------------------------------------------------------------------------
-# Model — confirmed chat model on HF serverless inference router
+# Free, fast Groq-hosted model
 # ---------------------------------------------------------------------------
-MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"
+MODEL_ID = "llama-3.3-70b-versatile"
 
 SYSTEM_PROMPT = (
     "You are a helpful, knowledgeable, and friendly AI assistant named Nova. "
@@ -34,16 +34,12 @@ SYSTEM_PROMPT = (
     "identifiers when providing code. Be concise yet thorough."
 )
 
-# Use provider="hf-inference" for the new router.huggingface.co endpoint
-client = InferenceClient(
-    provider="hf-inference",
-    api_key=HF_TOKEN,
-)
+client = Groq(api_key=GROQ_API_KEY)
 
 
 def generate_response(history: List[Dict[str, str]], user_message: str) -> str:
     """
-    Send conversation history + new user message to HuggingFace and return
+    Send conversation history + new user message to Groq and return
     the assistant's reply.
 
     Args:
@@ -65,7 +61,7 @@ def generate_response(history: List[Dict[str, str]], user_message: str) -> str:
 
         messages.append({"role": "user", "content": user_message})
 
-        response = client.chat_completion(
+        response = client.chat.completions.create(
             model=MODEL_ID,
             messages=messages,
             max_tokens=2048,
@@ -79,5 +75,5 @@ def generate_response(history: List[Dict[str, str]], user_message: str) -> str:
         return text
 
     except Exception as exc:
-        logger.exception("HuggingFace API error: %s", exc)
+        logger.exception("Groq API error: %s", exc)
         raise RuntimeError(f"Failed to get response from AI model: {exc}") from exc
