@@ -3,59 +3,60 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState } from "react";
-import { HiClipboard, HiCheck, HiSparkles } from "react-icons/hi2";
+import { HiClipboard, HiCheck } from "react-icons/hi2";
+import { BsStars } from "react-icons/bs";
 
-/**
- * MessageBubble — renders a single chat message with premium styling.
- */
 export default function MessageBubble({ role, content, index = 0 }) {
   const isUser = role === "user";
   const isError = role === "error";
 
+  /* ── Error state ──────────────────────────────────────────────────── */
   if (isError) {
     return (
       <div
-        className="flex justify-center animate-message-in my-3"
-        style={{ animationDelay: `${index * 0.05}s` }}
+        className="animate-fade-up py-3"
+        style={{ animationDelay: `${index * 0.04}s` }}
       >
-        <div className="max-w-2xl w-full glass border-red-500/20 text-red-300 rounded-2xl px-5 py-4 text-sm flex items-start gap-3">
-          <span className="text-lg">⚠️</span>
-          <span>{content}</span>
+        <div className="max-w-3xl mx-auto flex items-start gap-3 px-1">
+          <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <span className="text-xs">⚠️</span>
+          </div>
+          <p className="text-sm text-red-400/90 leading-relaxed pt-0.5">{content}</p>
         </div>
       </div>
     );
   }
 
+  /* ── User message ─────────────────────────────────────────────────── */
+  if (isUser) {
+    return (
+      <div
+        className="animate-slide-right py-3"
+        style={{ animationDelay: `${index * 0.04}s` }}
+      >
+        <div className="flex justify-end">
+          <div className="max-w-[80%] md:max-w-xl px-4 py-3 rounded-2xl rounded-br-md bg-white text-black text-sm leading-relaxed">
+            <p className="whitespace-pre-wrap">{content}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Assistant message ────────────────────────────────────────────── */
   return (
     <div
-      className={`flex ${isUser ? "justify-end" : "justify-start"} animate-message-in my-2`}
-      style={{ animationDelay: `${index * 0.05}s` }}
+      className="animate-slide-left py-3"
+      style={{ animationDelay: `${index * 0.04}s` }}
     >
-      {/* Assistant avatar */}
-      {!isUser && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mr-3 mt-1 shadow-lg shadow-violet-600/20">
-          <HiSparkles className="w-4 h-4 text-white" />
+      <div className="flex items-start gap-3">
+        {/* Avatar */}
+        <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center mt-0.5">
+          <BsStars className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
         </div>
-      )}
 
-      <div
-        className={`relative max-w-[82%] md:max-w-2xl rounded-2xl text-sm leading-relaxed ${
-          isUser
-            ? "bg-gradient-to-br from-violet-600 to-indigo-600 text-white px-5 py-3.5 rounded-br-md shadow-lg shadow-violet-600/15"
-            : "glass px-5 py-4 rounded-bl-md"
-        }`}
-      >
-        {/* Shimmer on user messages */}
-        {isUser && (
-          <div className="absolute inset-0 rounded-2xl rounded-br-md overflow-hidden pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-                 style={{ animation: "shimmer 3s infinite" }} />
-          </div>
-        )}
-
-        {isUser ? (
-          <p className="whitespace-pre-wrap relative z-10">{content}</p>
-        ) : (
+        {/* Content */}
+        <div className="min-w-0 flex-1 max-w-2xl">
           <div className="markdown-body">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -69,31 +70,20 @@ export default function MessageBubble({ role, content, index = 0 }) {
                       </CodeBlock>
                     );
                   }
-                  return (
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  );
+                  return <code className={className} {...props}>{children}</code>;
                 },
               }}
             >
               {content}
             </ReactMarkdown>
           </div>
-        )}
-      </div>
-
-      {/* User avatar */}
-      {isUser && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center ml-3 mt-1 shadow-lg text-xs font-bold text-white">
-          U
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
-/* ── Premium Code Block ─────────────────────────────────────────────────── */
+/* ── Code Block ─────────────────────────────────────────────────────────── */
 function CodeBlock({ language, children }) {
   const [copied, setCopied] = useState(false);
 
@@ -104,30 +94,30 @@ function CodeBlock({ language, children }) {
   };
 
   return (
-    <div className="relative group my-3 rounded-xl overflow-hidden border border-white/[0.06]">
-      {/* Header bar */}
-      <div className="flex items-center justify-between bg-[#1a1a2e] px-4 py-2 text-xs">
-        <div className="flex items-center gap-2">
+    <div className="relative group my-3 rounded-lg overflow-hidden border border-[var(--border)] bg-[#0D0D0D]">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-tertiary)] border-b border-[var(--border)]">
+        <div className="flex items-center gap-2 text-[11px]">
           <div className="flex gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+            <span className="w-2 h-2 rounded-full bg-[#FF5F57]" />
+            <span className="w-2 h-2 rounded-full bg-[#FFBD2E]" />
+            <span className="w-2 h-2 rounded-full bg-[#28CA42]" />
           </div>
-          <span className="text-violet-300/70 font-medium ml-2">{language}</span>
+          <span className="text-[var(--text-muted)] font-medium ml-1">{language}</span>
         </div>
+
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-slate-500 hover:text-white transition-all duration-200 px-2 py-1 rounded-md hover:bg-white/5"
-          aria-label="Copy code"
+          className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors px-2 py-1 rounded hover:bg-[var(--accent-dim)]"
         >
           {copied ? (
             <>
-              <HiCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400">Copied!</span>
+              <HiCheck className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400">Copied</span>
             </>
           ) : (
             <>
-              <HiClipboard className="w-3.5 h-3.5" />
+              <HiClipboard className="w-3 h-3" />
               <span>Copy</span>
             </>
           )}
@@ -140,7 +130,7 @@ function CodeBlock({ language, children }) {
         PreTag="div"
         customStyle={{
           margin: 0,
-          background: "#0f0f1a",
+          background: "#0D0D0D",
           borderRadius: 0,
           fontSize: "0.8rem",
           padding: "1rem 1.25rem",

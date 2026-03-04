@@ -1,21 +1,18 @@
 import { useState, useCallback } from "react";
-import { HiBars3, HiSparkles } from "react-icons/hi2";
+import { HiBars3 } from "react-icons/hi2";
+import { BsStars } from "react-icons/bs";
 import Sidebar from "../components/Sidebar.jsx";
 import ChatWindow from "../components/ChatWindow.jsx";
 import InputBar from "../components/InputBar.jsx";
 import { getSessionId, newSession } from "../utils/session.js";
 import { sendMessage } from "../api/chat.js";
 
-/**
- * Home — main page layout with premium glassmorphism UI.
- */
 export default function Home({ darkMode, setDarkMode }) {
   const [sessionId, setSessionId] = useState(getSessionId);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /** Send a message (from input bar or suggestion click). */
   const handleSend = useCallback(
     async (text) => {
       const userMsg = { role: "user", content: text };
@@ -37,7 +34,6 @@ export default function Home({ darkMode, setDarkMode }) {
     [sessionId],
   );
 
-  /** Start a fresh session. */
   const handleNewChat = useCallback(() => {
     const id = newSession();
     setSessionId(id);
@@ -46,10 +42,8 @@ export default function Home({ darkMode, setDarkMode }) {
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      {/* ── Animated background orbs ─────────────────────────────── */}
       <div className="bg-mesh" />
 
-      {/* ── Sidebar ──────────────────────────────────────────────── */}
       <Sidebar
         darkMode={darkMode}
         setDarkMode={setDarkMode}
@@ -58,35 +52,29 @@ export default function Home({ darkMode, setDarkMode }) {
         onClose={() => setSidebarOpen(false)}
       />
 
-      {/* ── Main content ─────────────────────────────────────────── */}
       <div className="relative z-10 flex flex-col flex-1 min-w-0">
-        {/* Mobile top bar */}
-        <header className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.04] md:hidden backdrop-blur-xl bg-[var(--surface-1)]/60">
+        {/* Mobile header */}
+        <header className="flex items-center gap-3 px-4 h-14 border-b border-[var(--border)] md:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5 transition-all"
-            aria-label="Open sidebar"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-dim)] transition-all"
           >
             <HiBars3 className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
-              <HiSparkles className="w-3 h-3 text-white" />
+            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center">
+              <BsStars className="w-3 h-3 text-black" />
             </div>
-            <span className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
-              Gemini Chat
-            </span>
+            <span className="text-[13px] font-semibold tracking-tight">Nova AI</span>
           </div>
         </header>
 
-        {/* Chat messages — suggestion clicks also trigger handleSend */}
         <ChatWindow
           messages={messages}
           isLoading={isLoading}
           onSuggestionClick={handleSend}
         />
 
-        {/* Input bar */}
         <InputBar onSend={handleSend} disabled={isLoading} />
       </div>
     </div>
