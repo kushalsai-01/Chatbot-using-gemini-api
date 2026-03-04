@@ -3,6 +3,9 @@ database.py — SQLAlchemy engine & session factory.
 
 Reads DATABASE_URL from the environment and creates a connection-pooled engine
 suitable for synchronous FastAPI usage with psycopg2.
+
+IMPORTANT: For Render.com free tier, use Supabase **Connection Pooler** URL
+(IPv4, port 6543) instead of the direct connection (port 5432).
 """
 
 import os
@@ -22,12 +25,19 @@ if "supabase.co" in DATABASE_URL and "sslmode" not in DATABASE_URL:
     separator = "&" if "?" in DATABASE_URL else "?"
     DATABASE_URL = f"{DATABASE_URL}{separator}sslmode=require"
 
+# When using Supabase connection pooler (PgBouncer) with prepared_statement_cache_size,
+# we must disable statement caching to avoid prepared statement errors
+connect_args = {}
+if "pooler.supabase.com" in DATABASE_URL:
+    connect_args["options"] = "-c statement_timeout=60000"
+
 engine = create_engine(
     DATABASE_URL,
     pool_size=5,
     max_overflow=10,
     pool_pre_ping=True,
     pool_recycle=300,
+    connect_args=connect_args,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { HiBars3 } from "react-icons/hi2";
+import { HiBars3, HiSparkles } from "react-icons/hi2";
 import Sidebar from "../components/Sidebar.jsx";
 import ChatWindow from "../components/ChatWindow.jsx";
 import InputBar from "../components/InputBar.jsx";
@@ -7,10 +7,7 @@ import { getSessionId, newSession } from "../utils/session.js";
 import { sendMessage } from "../api/chat.js";
 
 /**
- * Home — main page layout.
- * Manages all chat state and orchestrates sidebar, messages, and input.
- *
- * @param {{ darkMode: boolean, setDarkMode: (v: boolean) => void }} props
+ * Home — main page layout with premium glassmorphism UI.
  */
 export default function Home({ darkMode, setDarkMode }) {
   const [sessionId, setSessionId] = useState(getSessionId);
@@ -18,12 +15,7 @@ export default function Home({ darkMode, setDarkMode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /**
-   * Handle sending a user message:
-   *  1. Optimistically append user bubble
-   *  2. Call backend
-   *  3. Append assistant bubble (or error)
-   */
+  /** Send a message (from input bar or suggestion click). */
   const handleSend = useCallback(
     async (text) => {
       const userMsg = { role: "user", content: text };
@@ -42,7 +34,7 @@ export default function Home({ darkMode, setDarkMode }) {
         setIsLoading(false);
       }
     },
-    [sessionId]
+    [sessionId],
   );
 
   /** Start a fresh session. */
@@ -53,8 +45,11 @@ export default function Home({ darkMode, setDarkMode }) {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-900 text-slate-100">
-      {/* Sidebar */}
+    <div className="relative flex h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      {/* ── Animated background orbs ─────────────────────────────── */}
+      <div className="bg-mesh" />
+
+      {/* ── Sidebar ──────────────────────────────────────────────── */}
       <Sidebar
         darkMode={darkMode}
         setDarkMode={setDarkMode}
@@ -63,26 +58,35 @@ export default function Home({ darkMode, setDarkMode }) {
         onClose={() => setSidebarOpen(false)}
       />
 
-      {/* Main area */}
-      <div className="flex flex-col flex-1 min-w-0">
-        {/* Top bar (mobile hamburger) */}
-        <header className="flex items-center gap-3 px-4 py-3 border-b border-slate-700/50 md:hidden">
+      {/* ── Main content ─────────────────────────────────────────── */}
+      <div className="relative z-10 flex flex-col flex-1 min-w-0">
+        {/* Mobile top bar */}
+        <header className="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.04] md:hidden backdrop-blur-xl bg-[var(--surface-1)]/60">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-slate-400 hover:text-slate-200"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/5 transition-all"
             aria-label="Open sidebar"
           >
             <HiBars3 className="w-5 h-5" />
           </button>
-          <span className="text-sm font-medium text-slate-300">
-            Gemini Chat
-          </span>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
+              <HiSparkles className="w-3 h-3 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
+              Gemini Chat
+            </span>
+          </div>
         </header>
 
-        {/* Chat messages */}
-        <ChatWindow messages={messages} isLoading={isLoading} />
+        {/* Chat messages — suggestion clicks also trigger handleSend */}
+        <ChatWindow
+          messages={messages}
+          isLoading={isLoading}
+          onSuggestionClick={handleSend}
+        />
 
-        {/* Input */}
+        {/* Input bar */}
         <InputBar onSend={handleSend} disabled={isLoading} />
       </div>
     </div>
