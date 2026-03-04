@@ -1,4 +1,4 @@
-import { HiPlus, HiXMark, HiTrash, HiArrowRightOnRectangle } from "react-icons/hi2";
+import { HiPlus, HiXMark, HiTrash, HiSun, HiMoon } from "react-icons/hi2";
 import { BsStars } from "react-icons/bs";
 
 export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClose }) {
@@ -20,8 +20,8 @@ export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClos
         {/* Header */}
         <div className="flex items-center justify-between px-4 h-14 border-b border-[var(--border)]">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center">
-              <BsStars className="w-3.5 h-3.5 text-black" />
+            <div className="w-7 h-7 rounded-lg bg-[var(--icon-bg)] flex items-center justify-center">
+              <BsStars className="w-3.5 h-3.5 text-[var(--icon-text)]" />
             </div>
             <span className="text-[13px] font-semibold tracking-tight text-[var(--text-primary)]">
               Nova AI
@@ -52,6 +52,19 @@ export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClos
 
         {/* Footer */}
         <div className="p-3 space-y-0.5 border-t border-[var(--border)]">
+          {/* Theme toggle */}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--accent-dim)] transition-all duration-200"
+          >
+            {darkMode ? (
+              <><HiSun className="w-3.5 h-3.5" /> Light mode</>
+            ) : (
+              <><HiMoon className="w-3.5 h-3.5" /> Dark mode</>
+            )}
+          </button>
+
+          {/* Clear history */}
           <button
             onClick={() => { onNewChat(); onClose(); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/5 transition-all duration-200"
@@ -61,7 +74,7 @@ export default function Sidebar({ darkMode, setDarkMode, onNewChat, open, onClos
           </button>
 
           <div className="mt-3 px-3 pb-1">
-            <p className="text-[10px] text-[var(--text-muted)]/60 tracking-[0.15em] uppercase">
+            <p className="text-[10px] text-[var(--text-muted)] opacity-60 tracking-[0.15em] uppercase">
               Powered by Gemini
             </p>
           </div>

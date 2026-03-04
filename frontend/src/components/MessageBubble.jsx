@@ -1,12 +1,12 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState } from "react";
 import { HiClipboard, HiCheck } from "react-icons/hi2";
 import { BsStars } from "react-icons/bs";
 
-export default function MessageBubble({ role, content, index = 0 }) {
+export default function MessageBubble({ role, content, index = 0, darkMode = true }) {
   const isUser = role === "user";
   const isError = role === "error";
 
@@ -35,7 +35,7 @@ export default function MessageBubble({ role, content, index = 0 }) {
         style={{ animationDelay: `${index * 0.04}s` }}
       >
         <div className="flex justify-end">
-          <div className="max-w-[80%] md:max-w-xl px-4 py-3 rounded-2xl rounded-br-md bg-white text-black text-sm leading-relaxed">
+          <div className="max-w-[80%] md:max-w-xl px-4 py-3 rounded-2xl rounded-br-md bg-[var(--user-bubble-bg)] text-[var(--user-bubble-text)] text-sm leading-relaxed">
             <p className="whitespace-pre-wrap">{content}</p>
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function MessageBubble({ role, content, index = 0 }) {
                   const match = /language-(\w+)/.exec(className || "");
                   if (!inline && match) {
                     return (
-                      <CodeBlock language={match[1]}>
+                      <CodeBlock language={match[1]} darkMode={darkMode}>
                         {String(children).replace(/\n$/, "")}
                       </CodeBlock>
                     );
@@ -84,7 +84,7 @@ export default function MessageBubble({ role, content, index = 0 }) {
 }
 
 /* ── Code Block ─────────────────────────────────────────────────────────── */
-function CodeBlock({ language, children }) {
+function CodeBlock({ language, children, darkMode = true }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -94,7 +94,7 @@ function CodeBlock({ language, children }) {
   };
 
   return (
-    <div className="relative group my-3 rounded-lg overflow-hidden border border-[var(--border)] bg-[#0D0D0D]">
+    <div className="relative group my-3 rounded-lg overflow-hidden border border-[var(--border)] bg-[var(--code-bg)]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-tertiary)] border-b border-[var(--border)]">
         <div className="flex items-center gap-2 text-[11px]">
@@ -125,15 +125,15 @@ function CodeBlock({ language, children }) {
       </div>
 
       <SyntaxHighlighter
-        style={oneDark}
+        style={darkMode ? oneDark : oneLight}
         language={language}
         PreTag="div"
         customStyle={{
           margin: 0,
-          background: "#0D0D0D",
+          background: darkMode ? '#0D0D0D' : '#F5F5F5',
           borderRadius: 0,
-          fontSize: "0.8rem",
-          padding: "1rem 1.25rem",
+          fontSize: '0.8rem',
+          padding: '1rem 1.25rem',
           fontFamily: "'JetBrains Mono', monospace",
         }}
       >

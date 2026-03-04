@@ -62,8 +62,8 @@ export default function Home({ darkMode, setDarkMode }) {
             <HiBars3 className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center">
-              <BsStars className="w-3 h-3 text-black" />
+            <div className="w-6 h-6 rounded-md bg-[var(--icon-bg)] flex items-center justify-center">
+              <BsStars className="w-3 h-3 text-[var(--icon-text)]" />
             </div>
             <span className="text-[13px] font-semibold tracking-tight">Nova AI</span>
           </div>
@@ -73,6 +73,7 @@ export default function Home({ darkMode, setDarkMode }) {
           messages={messages}
           isLoading={isLoading}
           onSuggestionClick={handleSend}
+          darkMode={darkMode}
         />
 
         <InputBar onSend={handleSend} disabled={isLoading} />

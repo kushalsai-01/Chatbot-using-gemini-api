@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Bolt-inspired black & white premium
+   DESIGN TOKENS — Dark (default)
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
   --bg-primary: #0A0A0A;
@@ -20,6 +20,46 @@
   --text-muted: #666666;
   --accent: #FFFFFF;
   --accent-dim: rgba(255, 255, 255, 0.08);
+  --user-bubble-bg: #FFFFFF;
+  --user-bubble-text: #000000;
+  --icon-bg: #FFFFFF;
+  --icon-text: #000000;
+  --code-bg: #0D0D0D;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.08);
+  --scrollbar-hover: rgba(255, 255, 255, 0.15);
+  --spotlight: rgba(255, 255, 255, 0.015);
+  --input-glow-border: rgba(255, 255, 255, 0.18);
+  --input-glow-ring: rgba(255, 255, 255, 0.06);
+  --input-glow-shadow: rgba(255, 255, 255, 0.04);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Light
+   ═══════════════════════════════════════════════════════════════════════════ */
+html:not(.dark) {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F7F8;
+  --bg-tertiary: #EFEFEF;
+  --bg-elevated: #F0F0F0;
+  --bg-hover: #E8E8E8;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.15);
+  --text-primary: #111111;
+  --text-secondary: #555555;
+  --text-muted: #999999;
+  --accent: #111111;
+  --accent-dim: rgba(0, 0, 0, 0.05);
+  --user-bubble-bg: #111111;
+  --user-bubble-text: #FFFFFF;
+  --icon-bg: #111111;
+  --icon-text: #FFFFFF;
+  --code-bg: #F5F5F5;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.1);
+  --scrollbar-hover: rgba(0, 0, 0, 0.2);
+  --spotlight: rgba(0, 0, 0, 0.015);
+  --input-glow-border: rgba(0, 0, 0, 0.15);
+  --input-glow-ring: rgba(0, 0, 0, 0.04);
+  --input-glow-shadow: rgba(0, 0, 0, 0.03);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -59,7 +99,7 @@ body {
   width: 900px;
   height: 900px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.015) 0%, transparent 65%);
+  background: radial-gradient(circle, var(--spotlight) 0%, transparent 65%);
   animation: breathe 12s ease-in-out infinite;
 }
 
@@ -73,8 +113,8 @@ body {
    ═══════════════════════════════════════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ANIMATIONS
@@ -174,9 +214,9 @@ body {
 }
 
 .input-glow:focus-within {
-  border-color: rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
-              0 8px 40px -12px rgba(255, 255, 255, 0.04);
+  border-color: var(--input-glow-border) !important;
+  box-shadow: 0 0 0 1px var(--input-glow-ring),
+              0 8px 40px -12px var(--input-glow-shadow);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -214,9 +254,9 @@ body {
 .markdown-body li::marker { color: var(--text-muted); }
 
 .markdown-body code:not(pre code) {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: #E5E5E5;
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
   padding: 0.15em 0.4em;
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
@@ -230,7 +270,7 @@ body {
 }
 
 .markdown-body blockquote {
-  border-left: 2px solid rgba(255,255,255,0.15);
+  border-left: 2px solid var(--border-hover);
   padding-left: 1em;
   margin: 0.75em 0;
   color: var(--text-muted);
@@ -259,11 +299,11 @@ body {
   color: var(--text-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgba(255,255,255,0.3);
+  text-decoration-color: var(--border-hover);
 }
 
 .markdown-body a:hover {
-  text-decoration-color: rgba(255,255,255,0.8);
+  text-decoration-color: var(--text-secondary);
 }
 
 .markdown-body hr {

@@ -50,7 +50,7 @@ export default function InputBar({ onSend, disabled }) {
             className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
               disabled
                 ? "bg-[var(--accent-dim)] text-[var(--text-muted)] cursor-not-allowed"
-                : "bg-white text-black hover:bg-white/90 active:scale-90"
+                : "bg-[var(--icon-bg)] text-[var(--icon-text)] hover:opacity-80 active:scale-90"
             }`}
           >
             {disabled ? (
